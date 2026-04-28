@@ -1,0 +1,128 @@
+/* --- 1. BRANDING & CORE VARIABLES --- */
+:root {
+    --primary-navy: #003366;    /* KSCAT Navy */
+    --accent-orange: #ff8c00;   /* KSCAT Orange */
+    --dark-bg: #001a33;
+    --light-gray: #f4f6f9;
+    --white: #ffffff;
+    --shadow-sm: 0 4px 6px rgba(0,0,0,0.1);
+    --shadow-lg: 0 15px 35px rgba(0,0,0,0.2);
+}
+
+/* --- 2. ADMINLTE LAYOUT FIXES --- */
+body { 
+    font-family: 'Source Sans Pro', sans-serif; 
+    background-color: var(--light-gray); 
+}
+
+/* Forces the sidebar to the company's navy brand color */
+.main-sidebar {
+    background-color: var(--primary-navy) !important;
+}
+
+/* Ensures the content area doesn't hide behind the sidebar */
+.content-wrapper {
+    background-color: var(--light-gray);
+    padding-bottom: 20px;
+}
+
+/* Navigation link active state */
+.nav-pills .nav-link.active, 
+.active {
+    background-color: var(--accent-orange) !important;
+    color: var(--white) !important;
+}
+
+/* --- 3. HTML5 ANIMATIONS --- */
+
+/* Smooth Floating for Logos */
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+}
+
+.floating-logo, 
+.login-logo img { 
+    animation: float 4s ease-in-out infinite; 
+}
+
+/* Morphing Background Blob for Dashboard */
+@keyframes morphBlob {
+    0% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; transform: rotate(0deg); }
+    50% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: rotate(180deg); }
+    100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; transform: rotate(360deg); }
+}
+
+.dashboard-bg-anim {
+    position: absolute;
+    top: -100px;
+    right: -50px;
+    width: 350px;
+    height: 350px;
+    background: rgba(255, 255, 255, 0.1);
+    animation: morphBlob 15s linear infinite;
+    z-index: 0;
+}
+
+/* --- 4. REUSABLE COMPONENTS --- */
+
+.card {
+    border: none;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+.card-primary.card-outline {
+    border-top: 4px solid var(--primary-navy);
+}
+
+.bg-navy {
+    background-color: var(--primary-navy) !important;
+    color: white;
+}
+
+.btn-primary {
+    background-color: var(--primary-navy);
+    border: none;
+    transition: 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-orange) !important;
+    transform: translateY(-2px);
+}
+
+/* --- 5. FEATURE SPECIFIC (Signature & Tables) --- */
+
+#sig-canvas { 
+    border: 2px dashed #cbd5e0; 
+    border-radius: 8px; 
+    cursor: crosshair; 
+    width: 100%; 
+    background: var(--white);
+    touch-action: none; /* CRITICAL: Prevents mobile scrolling while signing */
+}
+
+/* --- 6. LOGIN PAGE SPECIFIC --- */
+body.login-page {
+    background: linear-gradient(135deg, var(--primary-navy) 0%, var(--dark-bg) 100%);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-box {
+    width: 400px;
+}
+
+.login-logo img {
+    max-width: 220px;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
+}
