@@ -8,6 +8,38 @@ if ($_SESSION['role'] !== 'Admin') {
     exit();
 }
 
+$success_msg = '';
+$error_msg = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_evaluation'], $_POST['evaluation_id'])) {
+    $evaluation_id = intval($_POST['evaluation_id']);
+
+    if ($evaluation_id > 0) {
+        $update = $conn->prepare(
+            "UPDATE evaluations SET 
+                score_productivity = 0,
+                score_quality = 0,
+                score_attitude = 0,
+                score_teamwork = 0,
+                score_kpi = 0,
+                weighted_score = 0,
+                status = 'Pending',
+                signature_data = NULL,
+                employee_remarks = NULL
+             WHERE id = ?"
+        );
+        $update->bind_param('i', $evaluation_id);
+
+        if ($update->execute()) {
+            $success_msg = 'Evaluation score has been reset and approval status has been updated.';
+        } else {
+            $error_msg = 'Unable to reset the evaluation at this time. Please try again later.';
+        }
+    } else {
+        $error_msg = 'Invalid evaluation selected for reset.';
+    }
+}
+
 // Fetch all evaluations with employee names
 $query = "SELECT e.*, u.fullname, u.department 
           FROM evaluations e 
@@ -33,6 +65,21 @@ $result = $conn->query($query);
 
     <section class="content">
         <div class="container-fluid">
+            <?php if ($success_msg): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <?php echo $success_msg; ?>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            <?php elseif ($error_msg): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <?php echo $error_msg; ?>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            <?php endif; ?>
             <div class="card shadow-sm border-0">
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -74,6 +121,13 @@ $result = $conn->query($query);
                                                 data-sig="<?php echo $row['signature_data']; ?>">
                                             <i class="fas fa-eye"></i> View Details
                                         </button>
+                                        <form method="POST" class="d-inline" onsubmit="return confirm('Reset this employee evaluation score and unapprove it?');">
+                                            <input type="hidden" name="evaluation_id" value="<?php echo $row['id']; ?>">
+                                            <input type="hidden" name="reset_evaluation" value="1">
+                                            <button type="submit" class="btn btn-danger btn-sm ml-1">
+                                                <i class="fas fa-undo"></i> Reset
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                                 <?php endwhile; ?>
