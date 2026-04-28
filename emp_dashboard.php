@@ -34,7 +34,7 @@ $my_eval = $stmt->get_result()->fetch_assoc();
                     <div class="row align-items-center">
                         <div class="col-md-2 text-center mb-3 mb-md-0">
                             <img src="https://impro.usercontent.one/appid/oneComWsb/domain/kscat-asia.com/media/kscat-asia.com/onewebmedia/kscat%20logo.png" 
-                                 alt="KSCAT Logo" class="floating-logo" style="max-height: 80px; background: white; padding: 10px; border-radius: 50%;">
+                                 alt="KSCAT Logo" class="floating-logo" style="max-height: 80px;">
                         </div>
                         <div class="col-md-10">
                             <h2 class="display-5 mb-1">Welcome, <strong><?php echo $fullname; ?></strong></h2>
