@@ -1,5 +1,6 @@
 <?php
-include __DIR__ . '/functions.php';
+include 'config.php';
+include 'functions.php';
 checkLogin();
 
 if ($_SESSION['role'] !== 'Admin') {

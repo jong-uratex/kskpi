@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../config.php';
+require_once 'config.php';
 
 if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
     if ($_SESSION['role'] === 'Admin') {

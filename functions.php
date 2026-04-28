@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../config.php';
+require_once 'config.php';
 
 // Helper to secure inputs
 function sanitize($data) {
