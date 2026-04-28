@@ -56,6 +56,18 @@
                         <p>Perform Evaluation</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="evaluation_list.php" class="nav-link">
+                        <i class="nav-icon fas fa-list-alt"></i>
+                        <p>Evaluation List</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="manage_weights.php" class="nav-link">
+                        <i class="nav-icon fas fa-cogs"></i>
+                        <p>Settings</p>
+                    </a>
+                </li>
                 <?php else: ?>
                 <li class="nav-header">EMPLOYEE</li>
                 <li class="nav-item">
