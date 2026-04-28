@@ -19,14 +19,22 @@ $eval = $stmt->get_result()->fetch_assoc();
 // Handle Signature Submission
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_approval'])) {
     $remarks = sanitize($_POST['employee_remarks']);
-    $signature = $_POST['signature']; 
+    $signature = $_POST['signature'] ?? '';
     $eval_id = $_POST['eval_id'];
 
-    $update = $conn->prepare("UPDATE evaluations SET employee_remarks = ?, signature_data = ?, status = 'Approved' WHERE id = ? AND employee_id = ?");
-    $update->bind_param("ssii", $remarks, $signature, $eval_id, $user_id);
-    
-    if ($update->execute()) {
-        header("Refresh:0");
+    // Validate signature is not empty
+    if (empty($signature)) {
+        $error_msg = "Please provide a digital signature before approving.";
+    } else {
+        $update = $conn->prepare("UPDATE evaluations SET employee_remarks = ?, signature_data = ?, status = 'Approved' WHERE id = ? AND employee_id = ?");
+        $update->bind_param("ssii", $remarks, $signature, $eval_id, $user_id);
+        
+        if ($update->execute()) {
+            $success_msg = "Evaluation approved successfully!";
+            header("Refresh:2");
+        } else {
+            $error_msg = "Failed to save approval. Please try again.";
+        }
     }
 }
 ?>
@@ -37,6 +45,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_approval'])) {
             <div class="row justify-content-center">
                 <div class="col-md-11">
                     
+                    <?php if(isset($success_msg)): ?>
+                        <div class="alert alert-success shadow alert-dismissible fade show" role="alert">
+                            <?php echo $success_msg; ?>
+                            <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if(isset($error_msg)): ?>
+                        <div class="alert alert-warning shadow alert-dismissible fade show" role="alert">
+                            <?php echo $error_msg; ?>
+                            <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+                        </div>
+                    <?php endif; ?>
+
                     <?php if(!$eval): ?>
                         <div class="card shadow-lg text-center p-5">
                             <i class="fas fa-file-invoice fa-4x text-gray-200 mb-3"></i>
@@ -109,12 +131,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_approval'])) {
 
                                                 <div class="form-group">
                                                     <label>Digital Signature</label>
-                                                    <canvas id="sig-canvas" height="160" style="border: 2px dashed #cbd5e0; width: 100%; background: #fff; cursor: crosshair;"></canvas>
-                                                    <textarea id="sig-data" name="signature" class="d-none" required></textarea>
+                                                    <canvas id="sig-canvas" width="400" height="160" style="border: 2px dashed #cbd5e0; width: 100%; background: #fff; cursor: crosshair; display: block;"></canvas>
+                                                    <textarea id="sig-data" name="signature" class="d-none"></textarea>
                                                 </div>
 
                                                 <button type="button" class="btn btn-sm btn-default" onclick="clearSignature()">Clear</button>
-                                                <button type="submit" name="submit_approval" class="btn btn-success btn-block mt-3 shadow">
+                                                <button type="submit" name="submit_approval" class="btn btn-success btn-block mt-3 shadow" onclick="return validateSignature()">
                                                     Confirm Approval
                                                 </button>
                                             </form>
@@ -126,7 +148,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_approval'])) {
                                             <i class="fas fa-check-double fa-4x mb-3"></i>
                                             <h4>Evaluation Approved</h4>
                                             <p>Signed on <?php echo date('M d, Y', strtotime($eval['evaluation_date'])); ?></p>
-                                            <img src="<?php echo $eval['signature_data']; ?>" alt="Signature" style="max-width: 180px; background: white; border-radius: 5px; padding: 5px;">
+                                            <?php if($eval['signature_data']): ?>
+                                                <img src="<?php echo htmlspecialchars($eval['signature_data'], ENT_QUOTES, 'UTF-8'); ?>" alt="Signature" style="max-width: 180px; background: white; border-radius: 5px; padding: 5px;">
+                                            <?php else: ?>
+                                                <p class="text-muted mt-3">Signature data not available</p>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 <?php endif; ?>

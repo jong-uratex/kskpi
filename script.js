@@ -83,3 +83,12 @@ function clearSignature() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     document.getElementById("sig-data").value = "";
 }
+
+function validateSignature() {
+    const sigData = document.getElementById("sig-data");
+    if (!sigData || !sigData.value) {
+        alert("Please provide a digital signature before confirming approval.");
+        return false;
+    }
+    return true;
+}
