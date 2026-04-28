@@ -61,7 +61,77 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_approval'])) {
                         </div>
 
                         <div class="row">
+                            <div class="col-md-7">
+                                <div class="card card-primary card-outline shadow">
+                                    <div class="card-header"><h3 class="card-title font-weight-bold">Score Breakdown</h3></div>
+                                    <div class="card-body p-0">
+                                        <table class="table table-striped m-0">
+                                            <thead class="text-navy">
+                                                <tr><th>Category</th><th>Score</th><th>Weight</th><th>Weighted</th></tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr><td>Productivity</td><td><?php echo $eval['score_productivity']; ?></td><td><?php echo ($eval['w_productivity']*100); ?>%</td><td><?php echo number_format($eval['score_productivity'] * $eval['w_productivity'], 2); ?></td></tr>
+                                                <tr><td>Quality of Work</td><td><?php echo $eval['score_quality']; ?></td><td><?php echo ($eval['w_quality']*100); ?>%</td><td><?php echo number_format($eval['score_quality'] * $eval['w_quality'], 2); ?></td></tr>
+                                                <tr><td>Work Attitude</td><td><?php echo $eval['score_attitude']; ?></td><td><?php echo ($eval['w_attitude']*100); ?>%</td><td><?php echo number_format($eval['score_attitude'] * $eval['w_attitude'], 2); ?></td></tr>
+                                                <tr><td>Teamwork</td><td><?php echo $eval['score_teamwork']; ?></td><td><?php echo ($eval['w_teamwork']*100); ?>%</td><td><?php echo number_format($eval['score_teamwork'] * $eval['w_teamwork'], 2); ?></td></tr>
+                                                <tr><td>Role-Specific KPI</td><td><?php echo $eval['score_kpi']; ?></td><td><?php echo ($eval['w_kpi']*100); ?>%</td><td><?php echo number_format($eval['score_kpi'] * $eval['w_kpi'], 2); ?></td></tr>
+                                            </tbody>
+                                            <tfoot class="bg-light">
+                                                <tr>
+                                                    <th colspan="3" class="text-right">FINAL RATING:</th>
+                                                    <th class="text-navy h4 font-weight-bold"><?php echo $eval['weighted_score']; ?></th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="card shadow-sm mt-3">
+                                    <div class="card-body">
+                                        <h5 class="text-navy font-weight-bold"><i class="fas fa-comment-dots mr-2"></i> Admin Feedback:</h5>
+                                        <p class="text-muted italic">"<?php echo nl2br($eval['admin_remarks']); ?>."</p>
+                                    </div>
+                                </div>
                             </div>
+
+                            <div class="col-md-5">
+                                <?php if($eval['status'] == 'Pending'): ?>
+                                    <div class="card card-warning card-outline shadow">
+                                        <div class="card-header"><h3 class="card-title font-weight-bold">Acknowledge & Sign</h3></div>
+                                        <div class="card-body">
+                                            <form action="my_evaluation.php" method="POST" id="sig-form">
+                                                <input type="hidden" name="eval_id" value="<?php echo $eval['id']; ?>">
+                                                
+                                                <div class="form-group">
+                                                    <label>Your Clarifications (Optional)</label>
+                                                    <textarea name="employee_remarks" class="form-control" rows="3" placeholder="Enter remarks..."></textarea>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label>Digital Signature</label>
+                                                    <canvas id="sig-canvas" height="160" style="border: 2px dashed #cbd5e0; width: 100%; background: #fff; cursor: crosshair;"></canvas>
+                                                    <textarea id="sig-data" name="signature" class="d-none" required></textarea>
+                                                </div>
+
+                                                <button type="button" class="btn btn-sm btn-default" onclick="clearSignature()">Clear</button>
+                                                <button type="submit" name="submit_approval" class="btn btn-success btn-block mt-3 shadow">
+                                                    Confirm Approval
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="card bg-success shadow text-center py-5">
+                                        <div class="card-body">
+                                            <i class="fas fa-check-double fa-4x mb-3"></i>
+                                            <h4>Evaluation Approved</h4>
+                                            <p>Signed on <?php echo date('M d, Y', strtotime($eval['evaluation_date'])); ?></p>
+                                            <img src="<?php echo $eval['signature_data']; ?>" alt="Signature" style="max-width: 180px; background: white; border-radius: 5px; padding: 5px;">
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
 
                     <?php endif; ?>
                 </div>
