@@ -10,18 +10,24 @@ $fullname = $_SESSION['fullname'];
 $total_emps = 0;
 $pending_evals = 0;
 $completed_evals = 0;
+$my_eval = null;
+$error_message = '';
 
-if ($role == 'Admin') {
-    // Admin Stats
-    $total_emps = $conn->query("SELECT COUNT(*) as count FROM users WHERE role = 'Employee'")->fetch_assoc()['count'];
-    $pending_evals = $conn->query("SELECT COUNT(*) as count FROM evaluations WHERE status = 'Pending'")->fetch_assoc()['count'];
-    $completed_evals = $conn->query("SELECT COUNT(*) as count FROM evaluations WHERE status = 'Approved'")->fetch_assoc()['count'];
-} else {
-    // Employee Stats
-    $stmt = $conn->prepare("SELECT weighted_score, status FROM evaluations WHERE employee_id = ? ORDER BY id DESC LIMIT 1");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $my_eval = $stmt->get_result()->fetch_assoc();
+try {
+    if ($role == 'Admin') {
+        // Admin Stats
+        $total_emps = $conn->query("SELECT COUNT(*) as count FROM users WHERE role = 'Employee'")->fetch_assoc()['count'];
+        $pending_evals = $conn->query("SELECT COUNT(*) as count FROM evaluations WHERE status = 'Pending'")->fetch_assoc()['count'];
+        $completed_evals = $conn->query("SELECT COUNT(*) as count FROM evaluations WHERE status = 'Approved'")->fetch_assoc()['count'];
+    } else {
+        // Employee Stats
+        $stmt = $conn->prepare("SELECT weighted_score, status FROM evaluations WHERE employee_id = ? ORDER BY id DESC LIMIT 1");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $my_eval = $stmt->get_result()->fetch_assoc();
+    }
+} catch (mysqli_sql_exception $e) {
+    $error_message = 'Unable to load dashboard data. Please refresh the page or contact your administrator.';
 }
 ?>
 
@@ -50,6 +56,12 @@ if ($role == 'Admin') {
                 </div>
                 <div class="dashboard-bg-anim"></div>
             </div>
+
+            <?php if ($error_message): ?>
+                <div class="alert alert-warning shadow-sm mb-4">
+                    <?php echo $error_message; ?>
+                </div>
+            <?php endif; ?>
 
             <div class="row">
                 <?php if ($role == 'Admin'): ?>
