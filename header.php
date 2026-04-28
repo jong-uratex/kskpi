@@ -29,8 +29,7 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <a href="dashboard.php" class="brand-link">
         <img src="https://impro.usercontent.one/appid/oneComWsb/domain/kscat-asia.com/media/kscat-asia.com/onewebmedia/kscat%20logo.png" 
-             alt="KSCAT Logo" class="brand-image img-circle elevation-3 floating-logo" style="opacity: .8; background: white;" width="200">
-        <span class="brand-text font-weight-light">KSCAT KPI</span>
+             alt="KSCAT Logo" class="floating-logo" width="180">
     </a>
 
     <div class="sidebar">
