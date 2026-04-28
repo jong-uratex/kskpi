@@ -40,6 +40,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_evaluation'], $
     }
 }
 
+if (isset($_GET['success']) && !$success_msg) {
+    $success_msg = htmlspecialchars($_GET['success']);
+}
+if (isset($_GET['error']) && !$error_msg) {
+    $error_msg = htmlspecialchars($_GET['error']);
+}
+
 // Fetch all evaluations with employee names
 $query = "SELECT e.*, u.fullname, u.department 
           FROM evaluations e 

@@ -27,6 +27,18 @@ while($w = $weights_res->fetch_assoc()) { $weights[$w['department']] = $w; }
 
     <section class="content">
         <div class="container-fluid">
+            <?php if (isset($_GET['success'])): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <?php echo htmlspecialchars($_GET['success']); ?>
+                    <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+                </div>
+            <?php endif; ?>
+            <?php if (isset($_GET['error'])): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <?php echo htmlspecialchars($_GET['error']); ?>
+                    <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+                </div>
+            <?php endif; ?>
             <div class="card card-primary card-outline">
                 <form action="process_evaluation.php" method="POST">
                     <div class="card-body">
