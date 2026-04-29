@@ -11,6 +11,35 @@ if ($_SESSION['role'] !== 'Admin') {
 $success_msg = '';
 $error_msg = '';
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_employee'])) {
+    $fullname = sanitize($_POST['fullname'] ?? '');
+    $username = sanitize($_POST['username'] ?? '');
+    $password = trim($_POST['password'] ?? '');
+    $department = sanitize($_POST['department'] ?? '');
+
+    if ($fullname === '' || $username === '' || $password === '' || $department === '') {
+        $error_msg = 'Please provide fullname, username, password, and department for the new employee.';
+    } else {
+        $check = $conn->prepare("SELECT id FROM users WHERE username = ? LIMIT 1");
+        $check->bind_param('s', $username);
+        $check->execute();
+        $check->store_result();
+
+        if ($check->num_rows > 0) {
+            $error_msg = 'That username is already taken. Please choose a different one.';
+        } else {
+            $insert = $conn->prepare("INSERT INTO users (fullname, username, password, department, role) VALUES (?, ?, ?, ?, 'Employee')");
+            $insert->bind_param('ssss', $fullname, $username, $password, $department);
+
+            if ($insert->execute()) {
+                $success_msg = 'New employee has been added successfully.';
+            } else {
+                $error_msg = 'Unable to add employee at this time. Please try again later.';
+            }
+        }
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_evaluation'], $_POST['evaluation_id'])) {
     $evaluation_id = intval($_POST['evaluation_id']);
 
@@ -47,6 +76,12 @@ if (isset($_GET['error']) && !$error_msg) {
     $error_msg = htmlspecialchars($_GET['error']);
 }
 
+$departments = [];
+$deptResult = $conn->query("SELECT department FROM department_weights ORDER BY department");
+while ($deptRow = $deptResult->fetch_assoc()) {
+    $departments[] = $deptRow['department'];
+}
+
 // Fetch all evaluations with employee names
 $query = "SELECT e.*, u.fullname, u.department 
           FROM evaluations e 
@@ -64,6 +99,9 @@ $result = $conn->query($query);
             <div class="row mb-2">
                 <div class="col-sm-6"><h1 class="m-0 text-navy font-weight-bold">Evaluation Records</h1></div>
                 <div class="col-sm-6 text-right">
+                    <button type="button" class="btn btn-success shadow-sm mr-2" data-toggle="modal" data-target="#addEmployeeModal">
+                        <i class="fas fa-user-plus mr-1"></i> New Employee
+                    </button>
                     <a href="evaluate.php" class="btn btn-primary shadow-sm"><i class="fas fa-plus mr-1"></i> New Evaluation</a>
                 </div>
             </div>
@@ -145,6 +183,50 @@ $result = $conn->query($query);
             </div>
         </div>
     </section>
+</div>
+
+<div class="modal fade" id="addEmployeeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Add New Employee</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="evaluation_list.php">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" name="fullname" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" name="username" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" name="password" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Department</label>
+                        <select name="department" class="form-control" required>
+                            <option value="">-- Select Department --</option>
+                            <?php foreach ($departments as $department): ?>
+                                <option value="<?php echo htmlspecialchars($department); ?>"><?php echo htmlspecialchars($department); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <p class="text-muted small">The new employee will be created with the role <strong>Employee</strong>.</p>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="add_employee" value="1">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Add Employee</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-hidden="true">

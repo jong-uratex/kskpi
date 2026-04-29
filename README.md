@@ -52,6 +52,7 @@ A web-based performance evaluation application for KS Cross Asia Technology (KSC
   - view dashboard metrics
   - submit performance evaluations for employees
   - manage department evaluation weights
+  - add new employee accounts from the evaluation records page
 - Employee users can:
   - view their latest performance summary
   - inspect score breakdowns and admin remarks
